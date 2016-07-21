@@ -243,3 +243,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/MediaFileIntegrityChecker/AdditionalFiles/FFMpeg/ffmpeg.exe
+/MediaFileIntegrityChecker/AdditionalFiles/FFMpeg/ffplay.exe
+/MediaFileIntegrityChecker/AdditionalFiles/FFMpeg/ffprobe.exe

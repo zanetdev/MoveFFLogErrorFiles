@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "MoveFFLogErrorFiles\ConsoleApp.csproj", "{79DD733F-8EB5-46F3-9820-9768C68435FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{1A4EF0FE-2F5C-4E89-96EE-D0DA5E47AB80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaFileIntegrityChecker", "MediaFileIntegrityChecker\MediaFileIntegrityChecker.csproj", "{16A869E1-B86A-49F4-A725-2A6ED8909751}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79DD733F-8EB5-46F3-9820-9768C68435FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79DD733F-8EB5-46F3-9820-9768C68435FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79DD733F-8EB5-46F3-9820-9768C68435FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79DD733F-8EB5-46F3-9820-9768C68435FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A4EF0FE-2F5C-4E89-96EE-D0DA5E47AB80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A4EF0FE-2F5C-4E89-96EE-D0DA5E47AB80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A4EF0FE-2F5C-4E89-96EE-D0DA5E47AB80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A4EF0FE-2F5C-4E89-96EE-D0DA5E47AB80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16A869E1-B86A-49F4-A725-2A6ED8909751}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16A869E1-B86A-49F4-A725-2A6ED8909751}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16A869E1-B86A-49F4-A725-2A6ED8909751}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16A869E1-B86A-49F4-A725-2A6ED8909751}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
