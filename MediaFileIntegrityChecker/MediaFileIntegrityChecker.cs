@@ -55,13 +55,13 @@ namespace MediaFileIntegrityChecker
 
                         if (ffFileInfo.HasErrors)
                         {
-                            LogInfoEvent(this, "FILE CHECK FAILED");
+                            if (LogInfoEvent != null) LogInfoEvent(this, "FILE CHECK FAILED");
                             var currentDestinationErrDir = new DelimonExtended.DirectoryInfo(currentDirectory.FullName.Replace(_inputRoot.FullName, _outputRootError.FullName));
                             ffFileInfo.MoveFiles(destinationDirectory: currentDestinationErrDir);
                         }
                         else
                         {
-                            LogInfoEvent(this, "FILE CHECK OK");
+                            if (LogInfoEvent != null) LogInfoEvent(this, "FILE CHECK OK");
                             var currentDestinationChkDir = new DelimonExtended.DirectoryInfo(currentDirectory.FullName.Replace(_inputRoot.FullName, _outputRootChecked.FullName));
                             ffFileInfo.MoveFiles(destinationDirectory: currentDestinationChkDir);
                         }
@@ -70,7 +70,7 @@ namespace MediaFileIntegrityChecker
                     {
                         if (!mediaFile.Name.ToUpper().EndsWith(".FFLOG"))
                         {
-                            LogInfoEvent(this, "ACCOMPANYING FILE - NO CHECK REQUIRED");
+                            if (LogInfoEvent != null) LogInfoEvent(this, "ACCOMPANYING FILE - NO CHECK REQUIRED");
                             var currentDestinationChkDir = new DelimonExtended.DirectoryInfo(currentDirectory.FullName.Replace(_inputRoot.FullName, _outputRootChecked.FullName));
                             mediaFile.MoveTo(currentDestinationChkDir.FullName + "\\" + mediaFile.Name);
                         }
