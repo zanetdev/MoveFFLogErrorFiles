@@ -1,55 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using Nito.AsyncEx;
+using System;
 using System.Threading.Tasks;
 
-namespace MediaFileIntegrityChecker
+namespace MediaFileIntegrityCheckerConsole
 {
     class Program
     {
-        static void Main(string[] args)
+        public static async Task MainAsync(string[] args)
         {
             var options = new Options();
+
             if (CommandLine.Parser.Default.ParseArguments(args, options))
             {
-                string inputDirectoryString;
-                if (options.InputDirectory?.Length > 0)
+                if (Delimon.Win32.IO.Directory.Exists(options.InputDirectory))
                 {
-                    inputDirectoryString = options.InputDirectory;
-                    if (!System.IO.Directory.Exists(inputDirectoryString))
-                    { 
-                        throw new Exception("Input Directory does not exist");
-                    }
-                }
-                else
-                {
-                    inputDirectoryString = AppDomain.CurrentDomain.BaseDirectory;
-                }
+                    var inputDirectory = new Delimon.Win32.IO.DirectoryInfo(options.InputDirectory);
 
-                string outputDirectoryString;
-                if (options.OutputDirectory?.Length > 0)
-                {
-                    outputDirectoryString = options.OutputDirectory;
-                    if (!System.IO.Directory.Exists(inputDirectoryString))
-                    {
-                        throw new Exception("Output Directory does not exist");
-                    }
+                    var outputErrorDirectory = new DelimonExtended.DirectoryInfo(options.OutputErrorDirectory);
+                    var outputCheckedDirectory = new DelimonExtended.DirectoryInfo(options.OutputCheckedDirectory);
+
+                    var mfic = new MediaFileIntegrityChecker.MediaFileIntegrityChecker(inputDirectory, outputCheckedDirectory,
+                        outputErrorDirectory, options.MediaDirectoryIdentifier, options.MediaFileExtension,
+                        options.Overwrite.ToUpper() == "Y");
+                    mfic.LogInfoEvent += Mfic_LogInfoEvent;
+                    await mfic.Process();
+                    mfic.LogInfoEvent -= Mfic_LogInfoEvent;
                 }
                 else
                 {
-                    outputDirectoryString = AppDomain.CurrentDomain.BaseDirectory;
+                    Console.Write("Input Directory does not exist");
                 }
-                Console.WriteLine("Media File Integrity Checker");
-                Console.WriteLine("Processing Started");
-                MediaFileIntegrityChecker.RecurseDirectory(inputDirectoryString, outputDirectoryString, "m4a", inputDirectoryString, options.Overwrite.ToUpper() == "Y" );
-                Console.WriteLine("Processing Finished");
-                Console.ReadKey();
             }
+
+            else
+            {
+                Console.Write("Could Not Parse Command Line Arguments");
+            }
+        }
+
+
+        public static void Main(string[] args)
+        {
+
+            AsyncContext.Run(() => MainAsync(args));
+            Console.WriteLine("Processing Finished");
+            Console.ReadKey();
 
         }
 
+        private static void Mfic_LogInfoEvent(object sender, string e)
+        {
+            Console.WriteLine(e);
+        }
     }
 }

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{16A869E1-B86A-49F4-A725-2A6ED8909751}</ProjectGuid>
+    <ProjectGuid>{46522AEA-4F94-4D42-9BEB-FCB539BF511F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MediaFileIntegrityChecker</RootNamespace>
-    <AssemblyName>MediaFileIntegrityCheckerLibrary</AssemblyName>
+    <RootNamespace>DelimonExtended</RootNamespace>
+    <AssemblyName>DelimonExtended</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -43,36 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FFFileInfo.cs" />
-    <Compile Include="MediaFileIntegrityChecker.cs" />
-    <Compile Include="ProcessExtensions.cs" />
+    <Compile Include="Class1.cs" />
+    <Compile Include="DirectoryProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalFiles\Delimon.Win32.IO.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="AdditionalFiles\FFMpeg\ffmpeg.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="AdditionalFiles\FFMpeg\ffplay.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="AdditionalFiles\FFMpeg\ffprobe.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MediFiles\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AdditionalFiles\FFMpeg\Readme" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\DelimonExtended.csproj">
-      <Project>{46522aea-4f94-4d42-9beb-fcb539bf511f}</Project>
-      <Name>DelimonExtended</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

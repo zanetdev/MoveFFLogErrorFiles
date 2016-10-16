@@ -1,87 +1,89 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using Delimon.Win32.IO;
+using System;
 using System.Threading.Tasks;
 
 namespace MediaFileIntegrityChecker
 {
     public class MediaFileIntegrityChecker
     {
-         
-        public static void RecurseDirectory(string InputRoot, string OutputRoot, string FileExtension, string CurrentDirectory, bool OverwriteFFLog)
+        public event EventHandler<string> LogInfoEvent;
+        //private DirectoryInfo _currentDirectory;
+
+
+        private readonly DirectoryInfo _inputRoot;
+        private readonly DirectoryInfo _outputRootError;
+        private readonly string _fileExtension;
+        private readonly bool _overwriteFfLog;
+        private readonly string _mediaDirectoryIdentifier;
+        private readonly DirectoryInfo _outputRootChecked;
+
+
+        public MediaFileIntegrityChecker(DirectoryInfo inputRoot, DirectoryInfo outputRootChecked, DirectoryInfo outputRootError, string mediaDirectoryIdentifier, string fileExtension, bool overwriteFfLog)
         {
-            var InputDirectory = new System.IO.DirectoryInfo(CurrentDirectory);
-
-            foreach (System.IO.FileInfo mediaFile in InputDirectory.GetFiles("*." + FileExtension))
-            {
-                var fflogFile = getFFLogFile(mediaFile.FullName, OverwriteFFLog);
-
-                if (fflogFile.Length > 0)   //Check for Errors in fflog file
-                {
-                    Console.WriteLine(mediaFile.FullName);
-                    try
-                    {
-                        //Move Audio File
-                        var mediaFileNewName = mediaFile.FullName.Replace(InputRoot, OutputRoot);
-                        System.IO.Directory.CreateDirectory(mediaFileNewName.Replace(mediaFile.Name, ""));
-                        mediaFile.MoveTo(mediaFileNewName);
-                        Console.WriteLine("Moved:::" + mediaFileNewName);
-
-                        //Move fflog file
-                        var fflogNewName = mediaFile.FullName.Replace(InputRoot, OutputRoot) + ".fflog";
-                        fflogFile.MoveTo(fflogNewName);
-                        Console.WriteLine("Moved:::" + fflogNewName);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error processing:" + mediaFile.FullName);
-                        Console.WriteLine(ex.Message);
-                    }
-                }
-            }
-
-            foreach (System.IO.DirectoryInfo dir in InputDirectory.GetDirectories())
-            {
-                RecurseDirectory(InputRoot, OutputRoot, FileExtension, dir.FullName, OverwriteFFLog);
-            }
+            _inputRoot = inputRoot;
+            _outputRootError = outputRootError;
+            _outputRootChecked = outputRootChecked;
+            _fileExtension = fileExtension;
+            _overwriteFfLog = overwriteFfLog;
+            _mediaDirectoryIdentifier = mediaDirectoryIdentifier;
         }
 
-        public static System.IO.FileInfo getFFLogFile(string MediaFileName, bool OverwriteFFLog)
+        public async Task<bool> Process()
         {
-            var fflogfilename = MediaFileName + ".fflog";
+            await RecurseDirectory(_inputRoot);
+            return true;
+        }
 
-            if (!OverwriteFFLog)
+        private async Task<bool> RecurseDirectory(DirectoryInfo currentDirectory)
+        {
+            //Only process the files in a directory if that directory is a media directory
+            if (currentDirectory.FullName.ToUpper().Contains(_mediaDirectoryIdentifier.ToUpper()))
             {
-                if (System.IO.File.Exists(fflogfilename))
+                if (LogInfoEvent != null) LogInfoEvent(this, "PROCESSING DIRECTORY ::: " + currentDirectory.FullName);
+
+
+
+                foreach (FileInfo mediaFile in currentDirectory.GetFiles())
                 {
-                    Console.WriteLine("Already Processed:::" + MediaFileName);
-                    return new System.IO.FileInfo(fflogfilename);
+                    if (mediaFile.FullName.ToUpper().EndsWith("." + _fileExtension.ToUpper()))
+                    {
+
+
+                        var ffFileInfo = new FfFileInfo(mediaFile.FullName, _overwriteFfLog,
+                            FfFileInfo.LogErrorLevel.Error);
+                        ffFileInfo.LogInfoEvent += LogInfoEvent;
+
+                        if (ffFileInfo.HasErrors)
+                        {
+                            LogInfoEvent(this, "FILE CHECK FAILED");
+                            var currentDestinationErrDir = new DelimonExtended.DirectoryInfo(currentDirectory.FullName.Replace(_inputRoot.FullName, _outputRootError.FullName));
+                            ffFileInfo.MoveFiles(destinationDirectory: currentDestinationErrDir);
+                        }
+                        else
+                        {
+                            LogInfoEvent(this, "FILE CHECK OK");
+                            var currentDestinationChkDir = new DelimonExtended.DirectoryInfo(currentDirectory.FullName.Replace(_inputRoot.FullName, _outputRootChecked.FullName));
+                            ffFileInfo.MoveFiles(destinationDirectory: currentDestinationChkDir);
+                        }
+                    }
+                    else
+                    {
+                        if (!mediaFile.Name.ToUpper().EndsWith(".FFLOG"))
+                        {
+                            LogInfoEvent(this, "ACCOMPANYING FILE - NO CHECK REQUIRED");
+                            var currentDestinationChkDir = new DelimonExtended.DirectoryInfo(currentDirectory.FullName.Replace(_inputRoot.FullName, _outputRootChecked.FullName));
+                            mediaFile.MoveTo(currentDestinationChkDir.FullName + "\\" + mediaFile.Name);
+                        }
+
+                    }
                 }
             }
-            //Tests a media file with the FFMpeg utility. Results are stored in an "fflog" file corresponding to the Media File's Name
-            var p = new Process();
 
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.FileName = AppDomain.CurrentDomain.BaseDirectory + @"AdditionalFiles\FFMpeg\ffmpeg.exe";
-            p.StartInfo.Arguments = @"-v error -i """ + MediaFileName + @""" -f null - ";
-
-            p.Start();
-            string outputError = p.StandardError.ReadToEnd();
-            
-            p.WaitForExit();
-
-            using (var fflogfile = System.IO.File.CreateText(fflogfilename))
+            foreach (DirectoryInfo dir in currentDirectory.GetDirectories())
             {
-                fflogfile.Write(outputError);
-                fflogfile.Flush();
-                fflogfile.Close();
+                await RecurseDirectory(dir);
             }
-            return new System.IO.FileInfo(fflogfilename);
-
+            return true;
         }
     }
 }

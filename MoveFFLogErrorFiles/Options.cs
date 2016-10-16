@@ -1,23 +1,27 @@
 ﻿using CommandLine;
 using CommandLine.Text;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MediaFileIntegrityChecker
+namespace MediaFileIntegrityCheckerConsole
 {
     class Options
     {
-        [Option('i', "input", Required = false, HelpText = "Root Input directory to be processed.")]
+        [Option('i', "input", Required = true, HelpText = "Root Input directory to be processed.")]
         public string InputDirectory { get; set; }
 
-        [Option('o', "output", Required = false, HelpText = "Root Output directory for files identified with errors")]
-        public string OutputDirectory { get; set; }
+        [Option('e', "erroroutput", Required = true, HelpText = "Root Output directory for files identified with errors")]
+        public string OutputErrorDirectory { get; set; }
 
-        [Option('w', "overwrite", Required = false, HelpText = "Overwrite fflog files")]
+        [Option('o', "output", Required = true, HelpText = "Root Output directory for files identified with NO errors")]
+        public string OutputCheckedDirectory { get; set; }
+
+        [Option('w', "overwrite", Required = true, HelpText = "Overwrite fflog files")]
         public string Overwrite { get; set; }
+
+        [Option('d', "mediadirectoryidentifier", Required = true, HelpText = "Identifer which must be present in order to process the directory as a media directory")]
+        public string MediaDirectoryIdentifier { get; set; }
+
+        [Option('x', "mediafileextension", Required = true, HelpText = "The extension of the media files we are processing. Eg MP4 or M4A")]
+        public string MediaFileExtension { get; set; }
 
         [ParserState]
         public IParserState LastParserState { get; set; }
@@ -26,7 +30,7 @@ namespace MediaFileIntegrityChecker
         public string GetUsage()
         {
             return HelpText.AutoBuild(this,
-              (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
+              current => HelpText.DefaultParsingErrorsHandler(this, current));
         }
     }
 }
